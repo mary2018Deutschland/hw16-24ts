@@ -1,54 +1,127 @@
-// Задание 1 Модули для работы со строками
-// Создайте файл `stringUtils.ts`, в котором определите функции:
-// `capitalize`, которая делает первую букву строки заглавной.
-// `reverseString`, которая переворачивает строку задом наперед.
-// В файле `main.ts` импортируйте эти функции и протестируйте их на примерах строк.
+// Задание 1
+// Обработка цепочки промисов с `async/await`
+// Создайте несколько функций, которые
+// возвращают промисы с разным временем выполнения.
+// Напишите функцию, которая вызывает эти промисы поочерёдно,
+//  используя `await`, и обрабатывает результаты каждой операции.
+// Убедитесь, что цепочка промисов выполняется последовательно.
 
-// import { capitalize, reverseString } from "./stringUtils";
+function taskOne() {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res("1 task");
+    }, 1000);
+  });
+}
+function taskTwo() {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res("2 task");
+    }, 2000);
+  });
+}
+function taskThree() {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res("3 task");
+    }, 3000);
+  });
+}
 
-// console.log(capitalize("hello"));
-// console.log(reverseString("hello"));
+async function alternatelyCall() {
+  const result1 = await taskOne();
+  console.log(result1);
+  const result2 = await taskTwo();
+  console.log(result2);
+  const result3 = await taskThree();
+  console.log(result3);
+  // console.log(result1);
+  // console.log(result2);
+  // console.log(result3);
+}
 
-// Задание 2 Пространства имен для финансовых операций
-// Создайте файл `finance.ts`, в котором определите пространство имен `Finance`.
-// Внутри него создайте классы:
-// `LoanCalculator`, который рассчитывает ежемесячные платежи по кредиту по формуле аннуитета.
-// `TaxCalculator`, который рассчитывает налог на доход.
-// Используйте эти классы в файле `main.ts` для расчета платежей по кредиту
-// и налога на примерных данных.
-// import Finance from "./finance";
+// alternatelyCall();
 
-// console.log(Finance.LoanCalculator.calculateMonthlyPayment(1000, 0.2, 10));
-// console.log(Finance.TaxCalculator.calculateTax(1000, 0.2));
-// Задание 3 Вложенные пространства имен для управления пользователями
-// Создайте файл `userManagement.ts`, в котором определите
-// пространство имен `UserManagement`.
-// Внутри него создайте вложенное пространство
-// имен `Admin`. Внутри `Admin` создайте класс
-// `AdminUser`, который будет иметь свойства для имени, email и прав доступа (например, `isSuperAdmin`).
-// Также создайте методы для изменения прав доступа.
-// Используйте этот класс в файле `main.ts` для создания администратора и изменения его прав.
+// Задание 2
+// Асинхронная обработка данных из массива
+// Напишите функцию, которая принимает массив строк.
+// Каждая строка будет асинхронно обрабатываться
+// (например, преобразовываться в верхний регистр с задержкой).
+// Используйте `Promise.all` для выполнения всех операций параллельно и вывода всех результатов.
 
-// import UserManagement from "./userManagement";
+async function upperCaseOfStringArrayAsync(arr: string[]) {
+  const promisesArray: Promise<string>[] = [];
+  for (const item of arr) {
+    const result = await new Promise<string>((resolve) => {
+      setTimeout(() => {
+        resolve(item.toUpperCase());
+      }, 1000);
+    });
+    promisesArray.push(Promise.resolve(result));
+  }
+  console.log(promisesArray);
+  return Promise.all(promisesArray);
+}
 
-// const admin = new UserManagement.Admin.AdminUser(
-//   "Mascha",
-//   "cat@ukr.net",
-//   false
-// );
-// console.log(admin);
-// admin.changeAccess(true);
-// console.log(admin);
-// admin.changeAccess(false);
-// console.log(admin);
+const arrayTest = ["Vanja", "Mascha", "Olya"];
+// upperCaseOfStringArrayAsync(arrayTest);
 
-// Задание 4 Модули для работы с числовыми последовательностями
-// Создайте файл `sequenceUtils.ts`, в котором определите функции:
-// `generateFibonacci`, которая генерирует последовательность Фибоначчи до указанного числа.
-// `generatePrimeNumbers`, которая генерирует простые числа до указанного числа.
-// В файле `main.ts` импортируйте эти функции и протестируйте их на примерах.
+// Задание 3
+// Обработка ошибки в параллельных промисах
+// Напишите функцию, которая вызывает три промиса параллельно с помощью `Promise.all`.
+// Один из промисов должен намеренно завершиться с ошибкой через `reject`.
+// Обработайте эту ошибку с использованием `try/catch` и выведите соответствующее сообщение.
 
-import { generateFibonacci, generatePrimeNumbers } from "./sequenceFibonacci";
+async function promisesCall() {
+  try {
+    const result = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve("result1");
+      }, 1000);
+    });
 
-console.log(generateFibonacci(8));
-console.log(generatePrimeNumbers(8));
+    const result2 = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve("result2");
+      }, 2000);
+    });
+
+    const result3 = await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject("result3");
+      }, 3000);
+    });
+
+    const results = await Promise.all([result, result2, result3]);
+    console.log(results);
+  } catch (error) {
+    console.error("Error by PromisesProcessing: ", error);
+  }
+}
+// promisesCall();
+
+// Задание 4 Асинхронная функция с динамическим временем выполнения
+// Напишите асинхронную функцию, которая принимает массив чисел.
+// Для каждого числа создайте промис, который будет завершаться через
+// количество миллисекунд, равное значению числа.
+// Используйте `Promise.all` для ожидания завершения
+// всех промисов и вывода результатов в консоль.
+
+async function dynamicExecution(arr: number[]) {
+  const promises: Promise<number>[] = [];
+
+  for (const item of arr) {
+    const result = await new Promise<number>((resolve) => {
+      setTimeout(() => {
+        resolve(item);
+      }, item);
+    });
+    console.log(result);
+    promises.push(Promise.resolve(result));
+  }
+  console.log(promises);
+  return Promise.all(promises);
+}
+
+const arrayForTest = [2000, 4000, 6000];
+dynamicExecution(arrayForTest);
